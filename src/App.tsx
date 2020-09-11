@@ -1,7 +1,11 @@
-import React, { useReducer, useCallback } from "react";
+import React, { useReducer, useCallback, useMemo, useEffect } from "react";
+import { format, parseISO } from "date-fns";
+import { Result, Button, Row, Table, Select } from "antd";
 import qs from "qs";
 
 import { assertIsDefined } from "./util";
+
+import * as classes from "./App.module.scss";
 
 const baseUrl = "/api";
 
@@ -55,49 +59,78 @@ const types = [
 ];
 
 type Params = {
+  pagination_last_id?: string;
   state: "upcoming";
   type: string;
-  sort: "id";
+  sort: "display_order,start_datetime,id";
   limit: number;
+  /* some unused params missing */
 };
 type Event = {
-  /* todo */
+  id: string;
+  name: string;
+  description: null | string;
+  start_datetime: string;
+  /* some unused properties missing */
 };
 
 type Action =
   | { type: "started"; payload: Params }
-  | { type: "success"; payload: { events: Event[] } }
+  | {
+      type: "success";
+      payload: { events: Event[]; pagination: { next_page: string | null } };
+    }
   | { type: "error"; payload: Error; error: true };
+
 type State = {
   events: Array<Event> | null;
+  next: string | null;
   params: Params | null;
   error: Error | null;
   progress: boolean;
 };
 
+const defaultParams: Params = {
+  state: "upcoming",
+  type: types[0],
+  sort: "display_order,start_datetime,id",
+  limit: 20,
+};
+
 const initialState: State = {
   events: null,
+  next: null,
   params: null,
   error: null,
   progress: false,
 };
+
 function eventsReducer(state: State, action: Action): State {
-  console.log({ state, action });
+  let isPagination;
 
   switch (action.type) {
     case "started":
+      isPagination = !!action.payload.pagination_last_id;
       return {
         ...state,
+        events: isPagination ? state.events : [],
+        next: isPagination ? state.next : null,
         params: action.payload,
         progress: true,
       };
     case "success":
       assertIsDefined(state.params);
+
+      isPagination = !!state.params.pagination_last_id;
+      const oldEvents = isPagination ? state.events : [];
+      assertIsDefined(oldEvents);
+
       return {
         ...state,
         params: state.params,
         progress: false,
-        events: action.payload.events,
+        events: oldEvents.concat(action.payload.events),
+        next: action.payload.pagination.next_page,
         error: null,
       };
     case "error":
@@ -106,7 +139,6 @@ function eventsReducer(state: State, action: Action): State {
         ...state,
         params: state.params,
         progress: false,
-        events: null,
         error: action.payload,
       };
   }
@@ -115,17 +147,18 @@ function eventsReducer(state: State, action: Action): State {
 function App() {
   const [data, dispatch] = useReducer(eventsReducer, initialState);
 
-  const onChangeType = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const type = e.target.value;
+  const dataSource = useMemo(() => {
+    if (!data.events) return [];
 
-      const params: Params = {
-        state: "upcoming",
-        type,
-        sort: "id",
-        limit: 2,
-      };
+    return data.events.map((event) => ({
+      key: event.id,
+      name: event.name,
+      date: event.start_datetime,
+    }));
+  }, [data.events]);
 
+  const fetchEvents = useCallback(
+    (params: Params) => {
       dispatch({ type: "started", payload: params });
 
       const query = qs.stringify(params);
@@ -136,7 +169,11 @@ function App() {
       })
         .then((res) => res.json())
         .then((payload) => {
-          dispatch({ type: "success", payload });
+          if (payload && "error_type" in payload) {
+            dispatch({ type: "error", payload, error: true });
+          } else {
+            dispatch({ type: "success", payload });
+          }
         })
         .catch((error) => {
           dispatch({ type: "error", payload: error, error: true });
@@ -145,18 +182,80 @@ function App() {
     [dispatch]
   );
 
+  const onChangeType = useCallback(
+    (type: string) => fetchEvents({ ...defaultParams, type }),
+    [fetchEvents]
+  );
+  const onRetry = useCallback(() => {
+    assertIsDefined(data.params);
+    fetchEvents(data.params);
+  }, [data.params, fetchEvents]);
+  const onLoadMore = useCallback(() => {
+    assertIsDefined(data.next);
+    const query = data.next.replace("?", "");
+    const params = (qs.parse(query) as unknown) as Params;
+    fetchEvents(params);
+  }, [data.next, fetchEvents]);
+
   return (
-    <div>
-      <select value={data.params?.type} onChange={onChangeType}>
-        {!data.params?.type && <option>Please select type</option>}
+    <Row>
+      <Select
+        autoFocus
+        disabled={data.progress}
+        value={data.params?.type}
+        onChange={onChangeType}
+        placeholder="Plese select event type"
+        className={classes.fullWidth}
+      >
         {types.map((t) => (
-          <option key={t} value={t}>
+          <Select.Option key={t} value={t}>
             {t}
-          </option>
+          </Select.Option>
         ))}
-      </select>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
+      </Select>
+      {data.error !== null && (
+        <Result
+          status="error"
+          subTitle="Sorry, failed to load event."
+          className={classes.fullWidth}
+          extra={
+            <Button disabled={data.progress} type="primary" onClick={onRetry}>
+              Retry
+            </Button>
+          }
+        />
+      )}
+      {!data.error !== null && (
+        <>
+          <Table
+            className={classes.fullWidth}
+            dataSource={dataSource}
+            pagination={false}
+            columns={[
+              {
+                title: "Event name",
+                dataIndex: "name",
+              },
+              {
+                title: "Start Date",
+                dataIndex: "date",
+                render: (date) => format(parseISO(date), "PPPp"),
+              },
+            ]}
+          />
+          {!!data.next && (
+            <Button
+              disabled={data.progress}
+              type="primary"
+              onClick={onLoadMore}
+              className={classes.loadMore}
+            >
+              Load more
+            </Button>
+          )}
+        </>
+      )}
+    </Row>
   );
 }
 
