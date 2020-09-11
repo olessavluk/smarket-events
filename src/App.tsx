@@ -1,92 +1,32 @@
-import React, { useReducer, useCallback, useMemo, useEffect } from "react";
+import React, { useReducer, useCallback, useMemo } from "react";
 import { format, parseISO } from "date-fns";
 import { Result, Button, Row, Table, Select } from "antd";
 import qs from "qs";
 
+import {
+  Params,
+  Response as EventsResponse,
+  Event,
+  types,
+  loadEvents,
+} from "./api";
 import { assertIsDefined } from "./util";
 
 import * as classes from "./App.module.scss";
-
-const baseUrl = "/api";
-
-const types = [
-  "american_football_match",
-  "american_football_outright",
-  "baseball_match",
-  "baseball_outright",
-  "basketball_esports_match",
-  "basketball_match",
-  "boxing_match",
-  "call_of_duty_match",
-  "cricket_match",
-  "cricket_outright",
-  "csgo_match",
-  "current_affairs",
-  "cycling",
-  "darts_match",
-  "darts_outright",
-  "dota_2_match",
-  "football_esports_match",
-  "football_match",
-  "football_outright",
-  "golf_match",
-  "golf_outright",
-  "greyhound_racing_race",
-  "handball_match",
-  "horse_racing_race",
-  "ice_hockey_match",
-  "league_of_legends_match",
-  "mma_match",
-  "motorsports_race",
-  "motorsports_outright",
-  "politics",
-  "politics_outright",
-  "rowing",
-  "rugby_league_match",
-  "rugby_league_outright",
-  "rugby_union_match",
-  "rugby_union_outright",
-  "snooker_match",
-  "snooker_outright",
-  "table_tennis_match",
-  "table_tennis_outright",
-  "tennis_match",
-  "tennis_outright",
-  "volleyball_match",
-  "generic",
-  "top_level_event",
-  "tv_entertainment",
-];
-
-type Params = {
-  pagination_last_id?: string;
-  state: "upcoming";
-  type: string;
-  sort: "display_order,start_datetime,id";
-  limit: number;
-  /* some unused params missing */
-};
-type Event = {
-  id: string;
-  name: string;
-  description: null | string;
-  start_datetime: string;
-  /* some unused properties missing */
-};
 
 type Action =
   | { type: "started"; payload: Params }
   | {
       type: "success";
-      payload: { events: Event[]; pagination: { next_page: string | null } };
+      payload: EventsResponse;
     }
-  | { type: "error"; payload: Error; error: true };
+  | { type: "error"; payload: Error | EventsResponse; error: true };
 
 type State = {
   events: Array<Event> | null;
   next: string | null;
   params: Params | null;
-  error: Error | null;
+  error: Error | EventsResponse | null;
   progress: boolean;
 };
 
@@ -161,16 +101,10 @@ function App() {
     (params: Params) => {
       dispatch({ type: "started", payload: params });
 
-      const query = qs.stringify(params);
-      fetch(`${baseUrl}/v3/events/?${query}`, {
-        headers: {
-          Accept: "application/json",
-        },
-      })
-        .then((res) => res.json())
+      loadEvents(params)
         .then((payload) => {
-          if (payload && "error_type" in payload) {
-            dispatch({ type: "error", payload, error: true });
+          if ("error_type" in payload) {
+            throw new Error(payload.error_type);
           } else {
             dispatch({ type: "success", payload });
           }
@@ -201,6 +135,7 @@ function App() {
     <Row>
       <Select
         autoFocus
+        data-testid="type-select"
         disabled={data.progress}
         value={data.params?.type}
         onChange={onChangeType}
@@ -219,13 +154,18 @@ function App() {
           subTitle="Sorry, failed to load event."
           className={classes.fullWidth}
           extra={
-            <Button disabled={data.progress} type="primary" onClick={onRetry}>
+            <Button
+              data-testid="retry"
+              disabled={data.progress}
+              type="primary"
+              onClick={onRetry}
+            >
               Retry
             </Button>
           }
         />
       )}
-      {!data.error !== null && (
+      {data.error === null && (
         <>
           <Table
             className={classes.fullWidth}
@@ -245,6 +185,7 @@ function App() {
           />
           {!!data.next && (
             <Button
+              data-testid="load-more"
               disabled={data.progress}
               type="primary"
               onClick={onLoadMore}
