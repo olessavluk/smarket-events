@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "https://olessavluk.github.io/smarket-events/static/css/main.0dee49a4.chunk.css",
-    "main.js": "https://olessavluk.github.io/smarket-events/static/js/main.21a62512.chunk.js",
-    "main.js.map": "https://olessavluk.github.io/smarket-events/static/js/main.21a62512.chunk.js.map",
+    "main.js": "https://olessavluk.github.io/smarket-events/static/js/main.ff274114.chunk.js",
+    "main.js.map": "https://olessavluk.github.io/smarket-events/static/js/main.ff274114.chunk.js.map",
     "runtime-main.js": "https://olessavluk.github.io/smarket-events/static/js/runtime-main.14f8d23f.js",
     "runtime-main.js.map": "https://olessavluk.github.io/smarket-events/static/js/runtime-main.14f8d23f.js.map",
     "static/css/2.6df4c8f8.chunk.css": "https://olessavluk.github.io/smarket-events/static/css/2.6df4c8f8.chunk.css",
     "static/js/2.def58186.chunk.js": "https://olessavluk.github.io/smarket-events/static/js/2.def58186.chunk.js",
     "static/js/2.def58186.chunk.js.map": "https://olessavluk.github.io/smarket-events/static/js/2.def58186.chunk.js.map",
     "index.html": "https://olessavluk.github.io/smarket-events/index.html",
-    "precache-manifest.f9bca7393004252648e3b88606b2136c.js": "https://olessavluk.github.io/smarket-events/precache-manifest.f9bca7393004252648e3b88606b2136c.js",
+    "precache-manifest.e45fc9404af1ca9020007e4b93163297.js": "https://olessavluk.github.io/smarket-events/precache-manifest.e45fc9404af1ca9020007e4b93163297.js",
     "service-worker.js": "https://olessavluk.github.io/smarket-events/service-worker.js",
     "static/css/2.6df4c8f8.chunk.css.map": "https://olessavluk.github.io/smarket-events/static/css/2.6df4c8f8.chunk.css.map",
     "static/css/main.0dee49a4.chunk.css.map": "https://olessavluk.github.io/smarket-events/static/css/main.0dee49a4.chunk.css.map",
@@ -20,6 +20,6 @@
     "static/css/2.6df4c8f8.chunk.css",
     "static/js/2.def58186.chunk.js",
     "static/css/main.0dee49a4.chunk.css",
-    "static/js/main.21a62512.chunk.js"
+    "static/js/main.ff274114.chunk.js"
   ]
 }

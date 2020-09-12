@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "https://olessavluk.github.io/smarket-events/precache-manifest.f9bca7393004252648e3b88606b2136c.js"
+  "https://olessavluk.github.io/smarket-events/precache-manifest.e45fc9404af1ca9020007e4b93163297.js"
 );
 
 self.addEventListener('message', (event) => {
