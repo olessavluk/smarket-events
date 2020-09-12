@@ -1,6 +1,5 @@
 import React from "react";
-import { fireEvent } from "@testing-library/dom";
-import { wait, render } from "@testing-library/react";
+import { waitFor, render, fireEvent } from "@testing-library/react";
 
 import App from "./App";
 import * as api from "./api";
@@ -57,7 +56,7 @@ describe("App", () => {
     fireEvent.change(select, "new type");
     expect(select).toBeDisabled();
 
-    await wait();
+    await waitFor(() => {});
 
     expect(loadEventsMock).toHaveBeenLastCalledWith({
       limit: 20,
@@ -86,7 +85,7 @@ describe("App", () => {
     });
     fireEvent.click(loadMore);
 
-    await wait();
+    await waitFor(() => {});
 
     const rows = r.getAllByText(successResponse.events[0].name);
     expect(rows).toHaveLength(2);
@@ -106,7 +105,7 @@ describe("App", () => {
     fireEvent.change(select, "new type");
     expect(select).toBeDisabled();
 
-    await wait();
+    await waitFor(() => {});
 
     expect(loadEventsMock).toHaveBeenLastCalledWith({
       limit: 20,
@@ -121,7 +120,7 @@ describe("App", () => {
     fireEvent.click(retry);
     expect(retry).toBeDisabled();
 
-    await wait();
+    await waitFor(() => {});
 
     const event = r.getByText(successResponse.events[0].name);
     expect(event).toBeInTheDocument();

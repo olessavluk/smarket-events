@@ -1,0 +1,28 @@
+* Smarket Events
+
+This project was bootstrapped with [[https://github.com/facebook/create-react-app][Create React App]].
+
+In case of trouble - their awesome documentation should help you.
+
+** Required Software
+
+ - [[https://nodejs.org/en/][Node]]
+ - [[https://yarnpkg.com/][Yarn]]
+ - [[https://www.docker.com/products/docker-desktop][Docker]]
+
+** Development
+
+0. ~yarn~ - install project dependencies
+1. create file ~.env~ according to ~.env.sample~
+3. ~yarn start~ - run the app in development mode
+4. open http://localhost:3000 and start hacking :)
+
+** Docker
+
+0. ~docker build -t smarket/events .~ build an image
+2. ~docker run --rm -it -p 8080:80 smarket/events~ run image on http://localhost:8080
+3. start QA'ing :)
+
+P.S. When running image locally you might need to proxy api to overcome CORS.
+
+To do this build image like this ~env REACT_APP_API_BASE_URL="https://cors-anywhere.herokuapp.com/https://api.smarkets.com" docker build --build-arg REACT_APP_API_BASE_URL -t smarket/events .~

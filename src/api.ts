@@ -22,7 +22,7 @@ export type Response = {
   error_type?: string;
 };
 
-const baseUrl = "/api";
+const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export const types = [
   "american_football_match",
