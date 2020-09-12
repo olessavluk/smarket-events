@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "875e99db5176a956580708d554674bfe",
+    "revision": "6c0c2d37ca250360ab4245385c97f053",
     "url": "https://olessavluk.github.io/smarket-events/index.html"
   },
   {
@@ -8,8 +8,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://olessavluk.github.io/smarket-events/static/css/2.6df4c8f8.chunk.css"
   },
   {
-    "revision": "a6599d6644e4ba922f70",
-    "url": "https://olessavluk.github.io/smarket-events/static/css/main.983a5241.chunk.css"
+    "revision": "344d578bc3155c33db4c",
+    "url": "https://olessavluk.github.io/smarket-events/static/css/main.0dee49a4.chunk.css"
   },
   {
     "revision": "9c04e4064a22d682c3cc",
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://olessavluk.github.io/smarket-events/static/js/2.def58186.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "a6599d6644e4ba922f70",
-    "url": "https://olessavluk.github.io/smarket-events/static/js/main.c8f4184e.chunk.js"
+    "revision": "344d578bc3155c33db4c",
+    "url": "https://olessavluk.github.io/smarket-events/static/js/main.21a62512.chunk.js"
   },
   {
     "revision": "69c79f33f15288187ae9",

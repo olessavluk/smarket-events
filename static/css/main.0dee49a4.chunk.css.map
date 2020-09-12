@@ -1,0 +1,1 @@
+{"version":3,"sources":["App.module.scss"],"names":[],"mappings":"AAAA,sBACE,UAAW,CACZ,qBAGC,gBAAiB","file":"main.0dee49a4.chunk.css","sourcesContent":[".fullWidth {\n  width: 100%;\n}\n\n.loadMore {\n  margin: 10px auto;\n}\n"]}
