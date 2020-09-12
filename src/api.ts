@@ -12,7 +12,7 @@ export type Params = {
 export type Event = {
   id: string;
   name: string;
-  start_datetime: string;
+  start_datetime: string | null;
   /* some unused properties missing */
 };
 
@@ -21,8 +21,6 @@ export type Response = {
   pagination: { next_page: string | null };
   error_type?: string;
 };
-
-const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export const types = [
   "american_football_match",
@@ -72,6 +70,8 @@ export const types = [
   "top_level_event",
   "tv_entertainment",
 ];
+
+const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export async function loadEvents(params: Params): Promise<Response> {
   const query = qs.stringify(params);

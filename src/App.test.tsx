@@ -39,6 +39,13 @@ const successResponse = {
   },
 };
 
+const defaultParams = {
+  limit: 20,
+  sort: "display_order,start_datetime,id",
+  state: "upcoming",
+  type: "american_football_match",
+};
+
 describe("App", () => {
   it("should render placeholder", () => {
     const r = render(<App />);
@@ -56,17 +63,12 @@ describe("App", () => {
     fireEvent.change(select, "new type");
     expect(select).toBeDisabled();
 
-    await waitFor(() => {});
-
-    expect(loadEventsMock).toHaveBeenLastCalledWith({
-      limit: 20,
-      sort: "display_order,start_datetime,id",
-      state: "upcoming",
-      type: "american_football_match",
+    await waitFor(() => {
+      const event = r.getByText(successResponse.events[0].name);
+      expect(event).toBeInTheDocument();
     });
 
-    const event = r.getByText(successResponse.events[0].name);
-    expect(event).toBeInTheDocument();
+    expect(loadEventsMock).toHaveBeenLastCalledWith(defaultParams);
 
     // paginate
     const loadMore = r.getByTestId("load-more");
@@ -85,14 +87,14 @@ describe("App", () => {
     });
     fireEvent.click(loadMore);
 
-    await waitFor(() => {});
-
-    const rows = r.getAllByText(successResponse.events[0].name);
-    expect(rows).toHaveLength(2);
-    expect(loadEventsMock).toHaveBeenLastCalledWith({
-      pagination_last_id: "id",
+    await waitFor(() => {
+      const rows = r.getAllByText(successResponse.events[0].name);
+      expect(rows).toHaveLength(2);
+      expect(loadEventsMock).toHaveBeenLastCalledWith({
+        pagination_last_id: "id",
+      });
+      expect(r.queryByTestId("load-more")).toBeNull();
     });
-    expect(r.queryByTestId("load-more")).toBeNull();
   });
 
   it("should show error & handle retry", async () => {
@@ -105,13 +107,8 @@ describe("App", () => {
     fireEvent.change(select, "new type");
     expect(select).toBeDisabled();
 
-    await waitFor(() => {});
-
-    expect(loadEventsMock).toHaveBeenLastCalledWith({
-      limit: 20,
-      sort: "display_order,start_datetime,id",
-      state: "upcoming",
-      type: "american_football_match",
+    await waitFor(() => {
+      expect(loadEventsMock).toHaveBeenLastCalledWith(defaultParams);
     });
 
     // retry
@@ -120,10 +117,10 @@ describe("App", () => {
     fireEvent.click(retry);
     expect(retry).toBeDisabled();
 
-    await waitFor(() => {});
-
-    const event = r.getByText(successResponse.events[0].name);
-    expect(event).toBeInTheDocument();
-    expect(r.queryByTestId("retry")).toBeNull();
+    await waitFor(() => {
+      const event = r.getByText(successResponse.events[0].name);
+      expect(event).toBeInTheDocument();
+      expect(r.queryByTestId("retry")).toBeNull();
+    });
   });
 });

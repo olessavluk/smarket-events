@@ -53,8 +53,6 @@ function eventsReducer(state: State, action: Action): State {
       isPagination = !!action.payload.pagination_last_id;
       return {
         ...state,
-        events: isPagination ? state.events : [],
-        next: isPagination ? state.next : null,
         params: action.payload,
         progress: true,
       };
@@ -82,6 +80,10 @@ function eventsReducer(state: State, action: Action): State {
         error: action.payload,
       };
   }
+}
+
+function deslugify(type: string) {
+  return type.replace(/_/g, " ");
 }
 
 function App() {
@@ -144,14 +146,14 @@ function App() {
       >
         {types.map((t) => (
           <Select.Option key={t} value={t}>
-            {t}
+            {deslugify(t)}
           </Select.Option>
         ))}
       </Select>
       {data.error !== null && (
         <Result
           status="error"
-          subTitle="Sorry, failed to load event."
+          subTitle="Sorry, failed to load events."
           className={classes.fullWidth}
           extra={
             <Button
@@ -179,7 +181,7 @@ function App() {
               {
                 title: "Start Date",
                 dataIndex: "date",
-                render: (date) => format(parseISO(date), "PPPp"),
+                render: (date) => (date ? format(parseISO(date), "PPPp") : "-"),
               },
             ]}
           />
